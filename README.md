@@ -60,7 +60,7 @@ Programming Assignment 2
 </tr>
 <tr>
 <td align="center">Chamfer Distance: <b>17.7066</b> <br>(목표: < 20)</td>
-<td align="center">Chamfer Distance: <b>34.6407</b> ㅇ<br>(목표: < 60)</td>
+<td align="center">Chamfer Distance: <b>34.6407</b> <br>(목표: < 60)</td>
 </tr>
 <tr>
 <td align="center">타겟 분포와 생성된 샘플이 정확히 일치</td>

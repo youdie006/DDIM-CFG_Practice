@@ -4,10 +4,12 @@
 KAIST CS492(D): Diffusion Models and Their Applications (Fall 2024)
 Programming Assignment 2
 
-## Task 1: DDIM (Denoising Diffusion Implicit Models)
+## Task 1: 2D Swiss-Roll DDPM & DDIM
 
-### 구현 내용
-#### `2d_plot_diffusion_todo/ddpm.py` - DDIM Sampling 구현
+## 구현 내용
+
+### 1. DDIM (Denoising Diffusion Implicit Models)
+**파일**: `2d_plot_diffusion_todo/ddpm.py`
 - `ddim_p_sample()`: DDIM의 한 스텝 역과정 (xt → xt-1)
   - x0 예측: x0_pred = (xt - √(1-ᾱt) * εθ) / √ᾱt
   - variance 계산: σt = η * √(variance)
@@ -58,7 +60,7 @@ Programming Assignment 2
 </tr>
 <tr>
 <td align="center">Chamfer Distance: <b>17.7066</b> <br>(목표: < 20)</td>
-<td align="center">Chamfer Distance: <b>34.6407</b> <br>(목표: < 60)</td>
+<td align="center">Chamfer Distance: <b>34.6407</b> ㅇ<br>(목표: < 60)</td>
 </tr>
 <tr>
 <td align="center">타겟 분포와 생성된 샘플이 정확히 일치</td>
@@ -70,12 +72,12 @@ Programming Assignment 2
 
 ### 구현 내용
 
-#### 2-1. Class Conditioning (`image_diffusion_todo/network.py`)
+#### 1. Class Conditioning (`image_diffusion_todo/network.py`)
 - One-hot encoding으로 클래스 라벨 처리
 - Timestep embedding과 class embedding 결합
 - `temb = temb + cemb`로 조건부 정보 통합
 
-#### 2-2. CFG Training (`image_diffusion_todo/network.py`)
+#### 2. CFG Training (`image_diffusion_todo/network.py`)
 - `cfg_dropout` 확률로 class label을 null(0)로 교체
 - 모델이 conditional과 unconditional 둘 다 학습
 ```python
@@ -83,7 +85,7 @@ mask = torch.rand(...) < self.cfg_dropout
 class_label = torch.where(mask, torch.zeros_like(...), class_label)
 ```
 
-#### 2-3. CFG Sampling (`image_diffusion_todo/model.py`)
+#### 3. CFG Sampling (`image_diffusion_todo/model.py`)
 - Batch를 2배로 늘려 unconditional/conditional 동시 계산
 - CFG 수식 적용: 
 ```python
@@ -98,6 +100,49 @@ noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_cond - noise_pred_
 
 ### 실행 결과
 (학습 진행 예정)
+
+## 프로젝트 구조
+```
+DDIM-CFG_Practice/
+├── 2d_plot_diffusion_todo/    # Task 1: DDIM 구현
+│   ├── ddpm.py                # DDIM 샘플링 구현
+│   ├── ddpm_tutorial.ipynb    # 실습 노트북
+│   ├── dataset.py             # 2D 데이터셋 (Swiss-roll)
+│   ├── network.py             # 노이즈 예측 네트워크
+│   └── chamferdist.py         # Chamfer Distance 측정
+├── image_diffusion_todo/      # Task 2: CFG 구현
+│   ├── train.py               # 학습 스크립트
+│   ├── sampling.py            # 샘플링 스크립트
+│   ├── model.py               # CFG 샘플링 구현
+│   ├── network.py             # Class conditioning 구현
+│   ├── module.py              # Diffusion 모듈
+│   ├── scheduler.py           # Noise scheduler
+│   ├── dataset.py             # 이미지 데이터셋 로더
+│   └── fid/                   # FID 측정 도구
+│       ├── inception.py
+│       └── measure_fid.py
+├── output/                    # 실행 결과 이미지
+└── assets/                    # 참고 자료
+    └── summary_of_DDPM_and_DDIM.pdf
+```
+## 실행 방법
+
+### Task 1: 2D Swiss-Roll
+Jupyter Notebook 실행: `2d_plot_diffusion_todo/ddpm_tutorial.ipynb`
+
+### Task 2: Image Diffusion  
+```bash
+# 학습
+python image_diffusion_todo/train.py --use_cfg
+
+# 샘플링
+python image_diffusion_todo/sampling.py --use_cfg
+```
+
+## 참고 자료
+- [Denoising Diffusion Probabilistic Models (DDPM)](https://arxiv.org/abs/2006.11239)
+- [Denoising Diffusion Implicit Models (DDIM)](https://arxiv.org/abs/2010.02502)
+- [Understanding Diffusion Models: A Unified Perspective](https://arxiv.org/abs/2208.11970)
 
 ## 원본 저장소
 https://github.com/KAIST-Visual-AI-Group/Diffusion-Assignment2-DDIM-CFG

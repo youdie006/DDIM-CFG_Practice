@@ -10,3 +10,13 @@ samples/
 # Solutions
 2d_plot_diffusion
 image_diffusion
+
+# Backup files
+README_original.md
+
+# Project config
+CLAUDE.md
+.claude/
+
+# Git ignore file itself
+.gitignore

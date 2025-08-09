@@ -82,13 +82,31 @@ class UNet(nn.Module):
                 ######## TODO ########
                 # DO NOT change the code outside this part.
                 # Assignment 2-2. Implement random null conditioning in CFG training.
-                raise NotImplementedError("TODO")
+                
+                # CFG training: 일정 확률로 클래스 라벨을 null(0)로 교체
+                mask = torch.rand(class_label.shape[0], device=class_label.device) < self.cfg_dropout
+                class_label = torch.where(mask, torch.zeros_like(class_label), class_label)
+                
+                # cfg_dropout 확률로 class_label을 0으로 변경
+                # 이를 통해 모델이 conditional과 unconditional 둘 다 학습
+                
                 #######################
             
             ######## TODO ########
             # DO NOT change the code outside this part.
             # Assignment 2-1. Implement class conditioning
-            raise NotImplementedError("TODO")
+            
+            # 1. 클래스 라벨을 embedding으로 변환
+            cemb = self.class_embedding(class_label)  # [B, cdim]
+            
+            # 2. timestep embedding과 class embedding 결합
+            temb = temb + cemb  # [B, tdim] + [B, cdim], cdim=tdim이므로 가능
+            
+            # CFG의 핵심: 
+            # - timestep 정보와 class 정보를 함께 사용
+            # - ResBlock에서 이 combined embedding을 조건으로 사용
+            # - Training 시 null condition도 학습하여 inference 시 guidance 가능
+            
             #######################
 
         # Downsampling

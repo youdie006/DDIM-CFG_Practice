@@ -18,8 +18,28 @@ class DiffusionModule(nn.Module):
         # DO NOT change the code outside this part.
         # compute noise matching loss.
         B = x0.shape[0]
-        timestep = self.var_scheduler.uniform_sample_t(B, self.device)        
-        loss = x0.mean()
+        timestep = self.var_scheduler.uniform_sample_t(B, self.device)
+        
+        # 1. 랜덤 노이즈 샘플링
+        if noise is None:
+            noise = torch.randn_like(x0)  # ε ~ N(0, I)
+        
+        # 2. Forward process로 노이즈 추가 
+        x_t, eps = self.var_scheduler.add_noise(x0, timestep, noise)  # xt = √(ᾱt)*x0 + √(1-ᾱt)*ε
+        
+        # 3. 네트워크로 노이즈 예측 (class_label은 conditional diffusion용)
+        if class_label is not None:
+            eps_theta = self.network(x_t, timestep=timestep, class_label=class_label)
+        else:
+            eps_theta = self.network(x_t, timestep=timestep)  # εθ(xt, t)
+        
+        # 4. MSE loss 계산: L = E[||ε - εθ(xt, t)||²]
+        loss = F.mse_loss(eps_theta, eps)
+        
+        # Task 1의 compute_loss와 동일한 로직
+        # uniform_sample_t로 랜덤 timestep 샘플링
+        # 이미지용으로 차원만 다름 [B,C,H,W]
+        
         ######################
         return loss
     
@@ -51,7 +71,15 @@ class DiffusionModule(nn.Module):
             # create a tensor of shape (2*batch_size,) where the first half is filled with zeros (i.e., null condition).
             assert class_label is not None
             assert len(class_label) == batch_size, f"len(class_label) != batch_size. {len(class_label)} != {batch_size}"
-            raise NotImplementedError("TODO")
+            
+            # Null condition (zeros)과 실제 class label을 concat
+            # [0, 0, ..., 0, c1, c2, ..., cn]
+            null_labels = torch.zeros_like(class_label)  # unconditional용 null labels
+            class_label = torch.cat([null_labels, class_label])  # [2*B]
+            
+            # x_T도 2배로 복제 (unconditional과 conditional 둘 다 계산용)
+            x_T = torch.cat([x_T, x_T])  # [2*B, 3, H, W]
+            
             #######################
 
         traj = [x_T]
@@ -60,7 +88,26 @@ class DiffusionModule(nn.Module):
             if do_classifier_free_guidance:
                 ######## TODO ########
                 # Assignment 2. Implement the classifier-free guidance.
-                raise NotImplementedError("TODO")
+                
+                # 1. Unconditional과 conditional prediction 동시에 계산
+                noise_pred = self.network(
+                    x_t,
+                    timestep=t.to(self.device),
+                    class_label=class_label,  # [null_labels, real_labels]
+                )
+                
+                # 2. 결과를 unconditional과 conditional로 분리
+                noise_pred_uncond, noise_pred_cond = noise_pred.chunk(2)
+                
+                # 3. CFG 수식 적용: ε̃ = (1+w)*ε_cond - w*ε_uncond
+                #    이는 ε̃ = ε_uncond + w*(ε_cond - ε_uncond)와 동일
+                noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_cond - noise_pred_uncond)
+                
+                # CFG의 핵심: guidance_scale(w)이 클수록 class condition을 더 강하게 따름
+                # w=0: unconditional only
+                # w=1: conditional과 unconditional의 차이만큼 강조
+                # w>1: over-emphasis (더 선명하지만 다양성 감소)
+                
                 #######################
             else:
                 noise_pred = self.network(

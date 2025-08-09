@@ -20,28 +20,51 @@ Programming Assignment 2
 
 ### 실행 결과
 
-#### 1. 학습 과정
-![Training Loss](./output/1.png)
+#### 1. Target & Prior 분포
+![Target and Prior](./output/1.png)
+- Swiss-roll 타겟 분포와 가우시안 prior 분포 시각화
+
+#### 2. Forward Process (q(x_t))
+![Forward Process](./output/2.png)
+- t=0부터 t=1000까지 점진적으로 노이즈가 추가되는 과정
+
+#### 3. Training Progress
+
+<table>
+<tr>
+<td><img src="./output/3.png" alt="Training Samples"></td>
+<td><img src="./output/4.png" alt="Loss Curve"></td>
+</tr>
+<tr>
+<td align="center"><b>Training Samples at 4999 iter</b></td>
+<td align="center"><b>Loss Curve</b></td>
+</tr>
+</table>
+
 - 5000 iteration 학습
 - **최종 loss: 0.3943**
 - 학습 속도: 136.11it/s (총 36초 소요)
 
-#### 2. DDPM 샘플링 결과
-![DDPM Sampling](./output/2.png)
-- 1000 스텝 full denoising
-- **DDPM Chamfer Distance: 17.7066** ✅
+#### 4. 최종 평가 - 생성된 분포 비교
 
-#### 3. DDIM 샘플링 결과  
-![DDIM Sampling](./output/3.png)
-- 50 스텝 accelerated sampling
-- **DDIM Chamfer Distance: 34.6407**
-- 속도는 20배 빠르지만 품질 trade-off 존재
-
-#### 4. 생성된 분포 비교
-![Generated Distribution](./output/4.png)
-![Final Comparison](./output/5.png)
-- Swiss-roll 패턴 재현
-- DDPM이 더 정확하지만 DDIM도 합리적인 품질
+<table>
+<tr>
+<td><img src="./output/5.png" alt="DDPM Result"></td>
+<td><img src="./output/6.png" alt="DDIM Result"></td>
+</tr>
+<tr>
+<td align="center"><b>DDPM (1000 steps)</b></td>
+<td align="center"><b>DDIM (50 steps)</b></td>
+</tr>
+<tr>
+<td align="center">Chamfer Distance: <b>17.7066</b> <br>(목표: < 20)</td>
+<td align="center">Chamfer Distance: <b>34.6407</b> <br>(목표: < 60)</td>
+</tr>
+<tr>
+<td align="center">타겟 분포와 생성된 샘플이 정확히 일치</td>
+<td align="center">20배 빠른 속도<br>합리적인 품질 유지</td>
+</tr>
+</table>
 
 ## Task 2: Classifier-Free Guidance (CFG)
 

@@ -116,15 +116,27 @@ class DiffusionModule(nn.Module):
                     class_label=class_label,
                 )
 
+            # CFG의 경우 x_t가 두 배로 되어 있으므로 원래 크기로 조정
+            if do_classifier_free_guidance:
+                x_t = x_t.chunk(2)[0]  # unconditional 부분만 사용
+            
             x_t_prev = self.var_scheduler.step(x_t, t, noise_pred)
 
+            # CFG의 경우 다음 스텝을 위해 x_t_prev를 다시 복제
+            if do_classifier_free_guidance:
+                x_t_prev = torch.cat([x_t_prev, x_t_prev])
+            
             traj[-1] = traj[-1].cpu()
             traj.append(x_t_prev.detach())
 
         if return_traj:
             return traj
         else:
-            return traj[-1]
+            result = traj[-1]
+            # CFG의 경우 결과도 원래 크기로 조정
+            if do_classifier_free_guidance:
+                result = result.chunk(2)[0]
+            return result
 
     def save(self, file_path):
         hparams = {
@@ -137,7 +149,7 @@ class DiffusionModule(nn.Module):
         torch.save(dic, file_path)
 
     def load(self, file_path):
-        dic = torch.load(file_path, map_location="cpu")
+        dic = torch.load(file_path, map_location="cpu", weights_only=False)
         hparams = dic["hparams"]
         state_dict = dic["state_dict"]
 

@@ -99,7 +99,44 @@ noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_cond - noise_pred_
 - **w>1**: strong guidance (더 선명하지만 다양성 감소)
 
 ### 실행 결과
-(학습 진행 예정)
+
+#### FID 점수 (AFHQ 데이터셋)
+| CFG Scale | FID Score | 평가 |
+|-----------|-----------|------|
+| 0.0 (No Guidance) | **9.61** | 우수 (< 30) |
+| 3.0 (Moderate) | **3.74** | 우수 (< 30) |
+| 7.5 (Strong) | **2.40** | 우수 (< 30) |
+
+**Task 2 채점: 10점/10점** - 모든 CFG scale에서 FID < 30 달성
+
+#### 생성 이미지 샘플
+
+**CFG 0.0 (No Guidance)**
+![CFG 0.0 Grid](assets/task2_results/grid_cfg_0.0.png)
+*다양성은 높지만 클래스 일관성이 낮음*
+
+**CFG 3.0 (Moderate Guidance)**
+![CFG 3.0 Grid](assets/task2_results/grid_cfg_3.0.png)
+*품질과 다양성의 균형*
+
+**CFG 7.5 (Strong Guidance)**
+![CFG 7.5 Grid](assets/task2_results/grid_cfg_7.5.png)
+*높은 품질, 명확한 클래스 특징*
+
+#### CFG Scale 효과 비교
+![Full Comparison](assets/task2_results/full_comparison.png)
+*각 행: 동일 시드 / 각 열: CFG 0.0 (왼쪽), 3.0 (중앙), 7.5 (오른쪽)*
+
+#### 관찰 결과
+- **CFG 0.0**: 노이즈가 많고 클래스 경계가 모호함
+- **CFG 3.0**: 자연스러운 이미지, 적절한 디테일
+- **CFG 7.5**: 매우 선명하고 클래스별 특징이 강조됨
+
+#### 학습 환경
+- **학습 스텝**: 100,000 steps
+- **Batch Size**: 8 (학습), 16 (샘플링)
+- **CFG Dropout**: 0.1
+- **학습 시간**: 약 15시간
 
 ## 프로젝트 구조
 ```

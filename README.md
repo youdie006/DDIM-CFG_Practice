@@ -114,6 +114,7 @@ noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_cond - noise_pred_
 ---
 
 #### CFG Scale별 생성 결과
+(상단: Cat, 중단: Dog, 하단: Wild)
 
 ##### CFG 0.0 (No Guidance)
 ![CFG 0.0 Grid](output/task2_final_results/bright_grid_cfg_0.0.png)
@@ -132,7 +133,7 @@ noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_cond - noise_pred_
 ##### CFG 7.5 (Strong Guidance)
 ![CFG 7.5 Grid](output/task2_final_results/bright_grid_cfg_7.5.png)
 
-*높은 품질, 선명한 디테일, 명확한 클래스별 특징 (상단: Cat, 중단: Dog, 하단: Wild)*
+*높은 품질, 선명한 디테일, 명확한 클래스별 특징*
 
 ---
 

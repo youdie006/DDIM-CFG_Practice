@@ -109,28 +109,49 @@ noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_cond - noise_pred_
 
 **Task 2 채점: 10점/10점** - 모든 CFG scale에서 FID < 30 달성
 
-#### 생성 이미지 샘플
+#### CFG Scale별 생성 결과
 
-**CFG 0.0 (No Guidance)**
-![CFG 0.0 Grid](assets/task2_results/grid_cfg_0.0.png)
-*다양성은 높지만 클래스 일관성이 낮음*
+##### CFG 0.0 (No Guidance)
+![CFG 0.0 Grid](output/task2_final_results/bright_grid_cfg_0.0.png)
 
-**CFG 3.0 (Moderate Guidance)**
-![CFG 3.0 Grid](assets/task2_results/grid_cfg_3.0.png)
-*품질과 다양성의 균형*
+*노이즈가 있지만 다양한 텍스처, 클래스 경계 모호*
 
-**CFG 7.5 (Strong Guidance)**
-![CFG 7.5 Grid](assets/task2_results/grid_cfg_7.5.png)
-*높은 품질, 명확한 클래스 특징*
+##### CFG 3.0 (Moderate Guidance)
+![CFG 3.0 Grid](output/task2_final_results/bright_grid_cfg_3.0.png)
 
-#### CFG Scale 효과 비교
-![Full Comparison](assets/task2_results/full_comparison.png)
-*각 행: 동일 시드 / 각 열: CFG 0.0 (왼쪽), 3.0 (중앙), 7.5 (오른쪽)*
+*품질과 다양성의 균형, 자연스러운 이미지*
+
+##### CFG 7.5 (Strong Guidance)
+![CFG 7.5 Grid](output/task2_final_results/bright_grid_cfg_7.5.png)
+
+*높은 품질, 선명한 디테일, 명확한 클래스별 특징 (상단: Cat, 중단: Dog, 하단: Wild)*
+
+#### CFG Scale 효과 비교 (동일 시드)
+
+##### Cat 클래스 (Label=1)
+![Cat Comparison](output/task2_final_results/comparisons/cat_comparison.png)
+
+*Cat 클래스: CFG 0.0 (왼쪽) → 3.0 (중앙) → 7.5 (오른쪽)*
+
+##### Dog 클래스 (Label=2)
+![Dog Comparison](output/task2_final_results/comparisons/dog_comparison_better.png)
+
+*Dog 클래스: CFG 0.0 (왼쪽) → 3.0 (중앙) → 7.5 (오른쪽)*
+
+##### Wild 클래스 (Label=3)
+![Wild Comparison](output/task2_final_results/comparisons/wild_comparison.png)
+
+*Wild 클래스: CFG 0.0 (왼쪽) → 3.0 (중앙) → 7.5 (오른쪽)*
 
 #### 관찰 결과
 - **CFG 0.0**: 노이즈가 많고 클래스 경계가 모호함
 - **CFG 3.0**: 자연스러운 이미지, 적절한 디테일
 - **CFG 7.5**: 매우 선명하고 클래스별 특징이 강조됨
+
+#### 핵심 발견사항
+- **클래스 라벨 매핑**: 학습 시 `label_offset=1`로 인해 Cat=1, Dog=2, Wild=3으로 매핑됨
+- **CFG 효과**: guidance_scale이 증가할수록 이미지 품질과 클래스 일관성 향상
+- **최적 CFG**: 7.5에서 가장 낮은 FID (2.40) 달성
 
 #### 학습 환경
 - **학습 스텝**: 100,000 steps

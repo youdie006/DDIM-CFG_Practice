@@ -23,19 +23,19 @@ Programming Assignment 2
 ### 실행 결과
 
 #### 1. Target & Prior 분포
-![Target and Prior](./output/1.png)
+![Target and Prior](./output/task1_results/1.png)
 - Swiss-roll 타겟 분포와 가우시안 prior 분포 시각화
 
 #### 2. Forward Process (q(x_t))
-![Forward Process](./output/2.png)
+![Forward Process](./output/task1_results/2.png)
 - t=0부터 t=1000까지 점진적으로 노이즈가 추가되는 과정
 
 #### 3. Training Progress
 
 <table>
 <tr>
-<td><img src="./output/3.png" alt="Training Samples"></td>
-<td><img src="./output/4.png" alt="Loss Curve"></td>
+<td><img src="./output/task1_results/3.png" alt="Training Samples"></td>
+<td><img src="./output/task1_results/4.png" alt="Loss Curve"></td>
 </tr>
 <tr>
 <td align="center"><b>Training Samples at 4999 iter</b></td>
@@ -51,8 +51,8 @@ Programming Assignment 2
 
 <table>
 <tr>
-<td><img src="./output/5.png" alt="DDPM Result"></td>
-<td><img src="./output/6.png" alt="DDIM Result"></td>
+<td><img src="./output/task1_results/5.png" alt="DDPM Result"></td>
+<td><img src="./output/task1_results/6.png" alt="DDIM Result"></td>
 </tr>
 <tr>
 <td align="center"><b>DDPM (1000 steps)</b></td>
